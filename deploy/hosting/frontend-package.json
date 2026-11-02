@@ -1,0 +1,6 @@
+{
+  "name": "sea-furniture-web",
+  "private": true,
+  "description": "Built Nuxt app. Startup file: app.cjs. No npm install needed.",
+  "engines": { "node": ">=20.11" }
+}

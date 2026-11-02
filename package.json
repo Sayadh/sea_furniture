@@ -1,0 +1,16 @@
+{
+  "name": "sea-furniture",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["backend", "frontend"],
+  "scripts": {
+    "dev:backend": "npm run start:dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "db:migrate": "npm run prisma:migrate:deploy -w backend",
+    "db:seed": "npm run prisma:seed -w backend"
+  },
+  "engines": { "node": ">=20.11" }
+}

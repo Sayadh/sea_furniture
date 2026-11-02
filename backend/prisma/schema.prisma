@@ -1,0 +1,353 @@
+// sea_furniture — Prisma schema
+// Prices are stored as integers in Armenian drams (AMD).
+// Database: MySQL / MariaDB (utf8mb4, case-insensitive collation — search is case-insensitive by default).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductAvailability {
+  IN_STOCK
+  MADE_TO_ORDER
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  IN_PROGRESS
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum RequestStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum RequestSource {
+  REPAIR
+  CONTACT
+  CONSULTATION
+}
+
+enum PortfolioImageKind {
+  BEFORE
+  AFTER
+  GALLERY
+}
+
+// ───────────────────────── Auth ─────────────────────────
+
+model AdminUser {
+  id            String         @id @default(uuid()) @db.Char(36)
+  email         String         @unique
+  passwordHash  String
+  name          String
+  isActive      Boolean        @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Char(36)
+  tokenHash    String    @unique
+  familyId     String    @db.Char(36)
+  adminUserId  String    @db.Char(36)
+  adminUser    AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?   @db.Char(36)
+  userAgent    String?   @db.VarChar(255)
+  ip           String?   @db.VarChar(64)
+  createdAt    DateTime  @default(now())
+
+  @@index([adminUserId])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+// ───────────────────────── Catalog ─────────────────────────
+
+model Category {
+  id             String    @id @default(uuid()) @db.Char(36)
+  name           String
+  slug           String    @unique
+  description    String?   @db.Text
+  imageUrl       String?   @db.VarChar(1000)
+  imagePath      String?   @db.VarChar(500)
+  isActive       Boolean   @default(true)
+  sortOrder      Int       @default(0)
+  seoTitle       String?
+  seoDescription String?   @db.VarChar(320)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  products       Product[]
+
+  @@index([isActive, sortOrder])
+}
+
+model Product {
+  id               String              @id @default(uuid()) @db.Char(36)
+  name             String              @db.VarChar(200)
+  slug             String              @unique
+  sku              String?             @unique
+  categoryId       String              @db.Char(36)
+  category         Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  shortDescription String?             @db.VarChar(500)
+  description      String?             @db.Text
+  price            Int
+  oldPrice         Int?
+  dimensions       String?             @db.VarChar(200)
+  material         String?             @db.VarChar(200)
+  color            String?             @db.VarChar(200)
+  availability     ProductAvailability @default(IN_STOCK)
+  stockQuantity    Int                 @default(0)
+  productionTime   String?
+  isFeatured       Boolean             @default(false)
+  isNew            Boolean             @default(false)
+  isOnSale         Boolean             @default(false)
+  isActive         Boolean             @default(true)
+  sortOrder        Int                 @default(0)
+  /// Set = shown in the home page hero slider (newest first, max 10); null = not in the slider
+  heroSlideAt      DateTime?
+  viewCount        Int                 @default(0)
+  seoTitle         String?
+  seoDescription   String?             @db.VarChar(320)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  deletedAt        DateTime?
+  images           ProductImage[]
+  orderItems       OrderItem[]
+
+  @@index([categoryId])
+  @@index([isActive, deletedAt])
+  @@index([createdAt])
+  @@index([price])
+  @@index([isFeatured])
+  @@index([isNew])
+  @@index([viewCount])
+  @@index([heroSlideAt])
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Char(36)
+  productId String   @db.Char(36)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String   @db.VarChar(1000)
+  path      String?  @db.VarChar(500)
+  alt       String?  @db.VarChar(255)
+  sortOrder Int      @default(0)
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId, sortOrder])
+}
+
+// ───────────────────────── Services ─────────────────────────
+
+model Service {
+  id               String          @id @default(uuid()) @db.Char(36)
+  title            String          @db.VarChar(200)
+  slug             String          @unique
+  shortDescription String?         @db.VarChar(500)
+  description      String?         @db.Text
+  priceFrom        Int?
+  duration         String?
+  isActive         Boolean         @default(true)
+  sortOrder        Int             @default(0)
+  seoTitle         String?
+  seoDescription   String?         @db.VarChar(320)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  images           ServiceImage[]
+  portfolioItems   PortfolioItem[]
+  repairRequests   RepairRequest[]
+
+  @@index([isActive, sortOrder])
+}
+
+model ServiceImage {
+  id        String   @id @default(uuid()) @db.Char(36)
+  serviceId String   @db.Char(36)
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  url       String   @db.VarChar(1000)
+  path      String?  @db.VarChar(500)
+  alt       String?  @db.VarChar(255)
+  sortOrder Int      @default(0)
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([serviceId, sortOrder])
+}
+
+// ───────────────────────── Portfolio ─────────────────────────
+
+model PortfolioItem {
+  id          String           @id @default(uuid()) @db.Char(36)
+  title       String           @db.VarChar(200)
+  description String?          @db.Text
+  serviceId   String?          @db.Char(36)
+  service     Service?         @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  isActive    Boolean          @default(true)
+  sortOrder   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  images      PortfolioImage[]
+
+  @@index([isActive, sortOrder])
+  @@index([serviceId])
+}
+
+model PortfolioImage {
+  id              String             @id @default(uuid()) @db.Char(36)
+  portfolioItemId String             @db.Char(36)
+  portfolioItem   PortfolioItem      @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+  url             String             @db.VarChar(1000)
+  path            String?            @db.VarChar(500)
+  alt             String?            @db.VarChar(255)
+  kind            PortfolioImageKind @default(GALLERY)
+  sortOrder       Int                @default(0)
+  createdAt       DateTime           @default(now())
+
+  @@index([portfolioItemId, sortOrder])
+}
+
+// ───────────────────────── FAQ ─────────────────────────
+
+model Faq {
+  id        String   @id @default(uuid()) @db.Char(36)
+  question  String   @db.VarChar(500)
+  answer    String   @db.Text
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+// ───────────────────────── Orders ─────────────────────────
+
+model Order {
+  id            String      @id @default(uuid()) @db.Char(36)
+  orderNumber   String      @unique
+  firstName     String
+  lastName      String
+  phone         String
+  altPhone      String?
+  region        String
+  address       String      @db.VarChar(300)
+  deliveryNotes String?     @db.VarChar(1000)
+  comment       String?     @db.Text
+  status        OrderStatus @default(NEW)
+  totalAmount   Int
+  itemsCount    Int
+  adminNote     String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  items         OrderItem[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([phone])
+  @@index([deletedAt])
+}
+
+model OrderItem {
+  id          String   @id @default(uuid()) @db.Char(36)
+  orderId     String   @db.Char(36)
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?  @db.Char(36)
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String   @db.VarChar(200)
+  productSlug String   @db.VarChar(200)
+  productSku  String?
+  imageUrl    String?  @db.VarChar(1000)
+  unitPrice   Int
+  quantity    Int
+  lineTotal   Int
+  createdAt   DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// ───────────────────────── Requests (repair / contact / consultation) ─────────────────────────
+
+model RepairRequest {
+  id            String               @id @default(uuid()) @db.Char(36)
+  requestNumber String               @unique
+  source        RequestSource        @default(REPAIR)
+  name          String
+  phone         String
+  serviceId     String?              @db.Char(36)
+  service       Service?             @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceTitle  String?              @db.VarChar(200)
+  address       String?              @db.VarChar(300)
+  description   String?              @db.Text
+  status        RequestStatus        @default(NEW)
+  adminNote     String?              @db.Text
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  deletedAt     DateTime?
+  images        RepairRequestImage[]
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+  @@index([phone])
+  @@index([deletedAt])
+}
+
+model RepairRequestImage {
+  id              String        @id @default(uuid()) @db.Char(36)
+  repairRequestId String        @db.Char(36)
+  repairRequest   RepairRequest @relation(fields: [repairRequestId], references: [id], onDelete: Cascade)
+  url             String        @db.VarChar(1000)
+  path            String?       @db.VarChar(500)
+  createdAt       DateTime      @default(now())
+
+  @@index([repairRequestId])
+}
+
+// ───────────────────────── Settings (singleton, key = "main") ─────────────────────────
+
+model SiteSettings {
+  id             String   @id @default(uuid()) @db.Char(36)
+  key            String   @unique @default("main")
+  siteName       String   @default("Sea Furniture")
+  logoUrl        String?  @db.VarChar(1000)
+  logoPath       String?  @db.VarChar(500)
+  phone          String?
+  phone2         String?
+  whatsapp       String?
+  email          String?
+  address        String?  @db.VarChar(300)
+  workingHours   String?  @db.VarChar(300)
+  instagramUrl   String?  @db.VarChar(500)
+  facebookUrl    String?  @db.VarChar(500)
+  tiktokUrl      String?  @db.VarChar(500)
+  mapEmbedUrl    String?  @db.Text
+  heroTitle      String?  @db.VarChar(200)
+  heroSubtitle   String?  @db.VarChar(500)
+  heroImageUrl   String?  @db.VarChar(1000)
+  heroImagePath  String?  @db.VarChar(500)
+  deliveryInfo   String?  @db.Text
+  seoTitle       String?
+  seoDescription String?  @db.VarChar(320)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
