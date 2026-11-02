@@ -58,6 +58,33 @@ export class UpdateSettingsDto {
   @IsOptional() @IsString() @MaxLength(500)
   heroImagePath?: string | null;
 
+  @IsOptional() @IsString() @MaxLength(1000) @Matches(URL_OR_UPLOAD, { message: 'isUrl' })
+  aboutImage1Url?: string | null;
+
+  @IsOptional() @IsString() @MaxLength(500)
+  aboutImage1Path?: string | null;
+
+  @IsOptional() @NullableText() @IsString() @MaxLength(255)
+  aboutImage1Alt?: string | null;
+
+  @IsOptional() @IsString() @MaxLength(1000) @Matches(URL_OR_UPLOAD, { message: 'isUrl' })
+  aboutImage2Url?: string | null;
+
+  @IsOptional() @IsString() @MaxLength(500)
+  aboutImage2Path?: string | null;
+
+  @IsOptional() @NullableText() @IsString() @MaxLength(255)
+  aboutImage2Alt?: string | null;
+
+  @IsOptional() @IsString() @MaxLength(1000) @Matches(URL_OR_UPLOAD, { message: 'isUrl' })
+  aboutImage3Url?: string | null;
+
+  @IsOptional() @IsString() @MaxLength(500)
+  aboutImage3Path?: string | null;
+
+  @IsOptional() @NullableText() @IsString() @MaxLength(255)
+  aboutImage3Alt?: string | null;
+
   @IsOptional() @NullableText() @IsString() @MaxLength(3000)
   deliveryInfo?: string | null;
 

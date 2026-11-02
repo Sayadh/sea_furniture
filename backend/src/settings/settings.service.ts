@@ -17,8 +17,9 @@ export class SettingsService {
   }
 
   async getPublic() {
-    const { logoPath, heroImagePath, id, key, createdAt, ...rest } = await this.get();
-    void logoPath; void heroImagePath; void id; void key; void createdAt;
+    // Storage paths are internal: the site only needs the public URLs
+    const { logoPath, heroImagePath, aboutImage1Path, aboutImage2Path, aboutImage3Path, id, key, createdAt, ...rest } = await this.get();
+    void logoPath; void heroImagePath; void aboutImage1Path; void aboutImage2Path; void aboutImage3Path; void id; void key; void createdAt;
     return rest;
   }
 
@@ -28,6 +29,9 @@ export class SettingsService {
     const stale = [
       before.logoPath !== after.logoPath ? before.logoPath : null,
       before.heroImagePath !== after.heroImagePath ? before.heroImagePath : null,
+      before.aboutImage1Path !== after.aboutImage1Path ? before.aboutImage1Path : null,
+      before.aboutImage2Path !== after.aboutImage2Path ? before.aboutImage2Path : null,
+      before.aboutImage3Path !== after.aboutImage3Path ? before.aboutImage3Path : null,
     ];
     await this.storage.remove(stale);
     return after;

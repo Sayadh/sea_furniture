@@ -10,11 +10,9 @@ const principles = [
   { title: 'Ճշգրիտ ժամկետներ', text: 'Պատվերը հանձնում ենք պայմանավորված օրը կամ ավելի շուտ։' },
   { title: 'Անհատական մոտեցում', text: 'Լսում ենք ձեր ցանկությունները և առաջարկում ենք լուծում ձեր տան և բյուջեի համար։' },
 ];
-const team = [
-  { src: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=1200&q=80&auto=format&fit=crop', alt: 'Կտորի ձևավորում արտադրամասում' },
-  { src: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=1200&q=80&auto=format&fit=crop', alt: 'Վարպետի գործիքներ' },
-  { src: 'https://images.unsplash.com/photo-1600166898405-da9535204843?w=1200&q=80&auto=format&fit=crop', alt: 'Կտորների նմուշներ' },
-];
+// Photos are editable in Admin → Կարգավորումներ; built-in placeholders until uploaded
+const settings = useSiteSettings();
+const team = computed(() => ([1, 2, 3] as const).map((n) => aboutImage(settings.value, n)));
 </script>
 
 <template>
@@ -24,18 +22,18 @@ const team = [
       <div class="mt-6 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
         <div>
           <h1 class="text-h1">Ստեղծում ենք կահույք, որով ապրում են տարիներ</h1>
-          <p class="prose-text mt-6">Մենք սկսել ենք որպես փոքր պաստառագործական արտադրամաս, որտեղ վերանորոգում էինք հարևանների բազմոցներն ու աթոռները։ Այսօր մեր թիմը պատրաստում է նոր փափուկ կահույք, կատարում է պատվերներ անհատական չափսերով և վերականգնում է ամենատարբեր տարիքի ու ոճի կահույք։
+          <p class="prose-text mt-6">Sea Furniture-ը փափուկ կահույքի արտադրությամբ, վաճառքով և վերանորոգմամբ զբաղվող ընկերություն է Երևանում։ Մեր արտադրամասում պատրաստում ենք բազմոցներ, բազկաթոռներ և ննջասենյակի կահույք, կատարում ենք անհատական պատվերներ և վերականգնում ենք ցանկացած տարիքի ու ոճի կահույք։
 
-Մեզ համար կարևոր է, որ յուրաքանչյուր բազմոց կամ բազկաթոռ լինի ոչ միայն գեղեցիկ, այլև ամուր ու հարմարավետ։ Այդ պատճառով բոլոր փուլերը՝ կարկասից մինչև վերջին կարը, կատարում ենք մեր արտադրամասում։</p>
+Երեք տարվա ընթացքում պատրաստել և վերանորոգել ենք ավելի քան 1500 կահույք։ Արտադրության բոլոր փուլերը՝ կարկասից մինչև վերջին կարը, իրականացնում ենք մեր արտադրամասում, ինչը թույլ է տալիս լիարժեք վերահսկել որակը և տալ մինչև 2 տարի երաշխիք։</p>
         </div>
-        <UiImg :src="team[0]?.src" :alt="team[0]!.alt" eager sizes="(min-width: 1024px) 45vw, 100vw" img-class="aspect-[4/3] w-full rounded-card object-cover" />
+        <UiImg :src="team[0]!.src" :alt="team[0]!.alt" eager sizes="(min-width: 1024px) 45vw, 100vw" img-class="aspect-[4/3] w-full rounded-card object-cover" />
       </div>
     </section>
 
     <section class="border-y border-line bg-white py-14">
       <div class="container grid gap-8 text-center sm:grid-cols-3">
-        <div><p class="font-serif text-h2 text-espresso">10+</p><p class="mt-2 text-muted">տարվա փորձ պաստառագործության մեջ</p></div>
-        <div><p class="font-serif text-h2 text-espresso">3000+</p><p class="mt-2 text-muted">վերանորոգված և պատրաստված կահույք</p></div>
+        <div><p class="font-serif text-h2 text-espresso">3</p><p class="mt-2 text-muted">տարվա փորձ պաստառագործության մեջ</p></div>
+        <div><p class="font-serif text-h2 text-espresso">1500+</p><p class="mt-2 text-muted">վերանորոգված և պատրաստված կահույք</p></div>
         <div><p class="font-serif text-h2 text-espresso">2 տարի</p><p class="mt-2 text-muted">երաշխիք մեր աշխատանքի համար</p></div>
       </div>
     </section>
@@ -61,7 +59,7 @@ const team = [
           <p class="prose-text mt-5">Մեր մասնագետը կարող է գալ ձեր տուն՝ կտորների նմուշներով, կչափագրի տարածքը և կօգնի ընտրել այն տարբերակը, որը լավագույնս կհամապատասխանի ձեր ինտերիերին։</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <UiImg v-for="(t, i) in team.slice(1)" :key="t.src" :src="t.src" :alt="t.alt" sizes="(min-width: 1024px) 25vw, 50vw" :img-class="`w-full rounded-card object-cover ${i === 0 ? 'aspect-[3/4] mt-10' : 'aspect-[3/4]'}`" />
+          <UiImg v-for="(t, i) in team.slice(1)" :key="i" :src="t.src" :alt="t.alt" sizes="(min-width: 1024px) 25vw, 50vw" :img-class="`w-full rounded-card object-cover ${i === 0 ? 'aspect-[3/4] mt-10' : 'aspect-[3/4]'}`" />
         </div>
       </div>
     </section>

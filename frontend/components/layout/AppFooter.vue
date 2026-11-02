@@ -38,6 +38,8 @@ const year = new Date().getFullYear();
         <h2 class="font-serif text-lg text-linen">Ընկերություն</h2>
         <ul class="mt-4 space-y-2.5 text-base">
           <li v-for="item in mainNav.slice(1)" :key="item.to"><NuxtLink :to="item.to" class="hover:text-brass">{{ item.label }}</NuxtLink></li>
+          <li><NuxtLink to="/kahuyq-hayastanum" class="hover:text-brass">Առաքում Հայաստանում</NuxtLink></li>
+          <li><NuxtLink to="/inchpes-yntrel-papuk-kahuyq" class="hover:text-brass">Ինչպես ընտրել կահույք</NuxtLink></li>
         </ul>
       </div>
 

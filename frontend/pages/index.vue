@@ -14,7 +14,6 @@ const [{ data: heroSlides }, { data: featured }, { data: fresh }, { data: servic
   useAsyncData('faqs', () => api<Faq[]>('/faqs'), { default: () => [] as Faq[] }),
 ]);
 
-const heroTitle = computed(() => settings.value?.heroTitle || 'Կահույք, որը ստեղծում է ձեր տան հարմարավետությունը');
 
 const heroFacts = computed(() => [
   { icon: 'grid', value: String(categories.value.length), label: 'Բաժիններ' },
@@ -56,7 +55,6 @@ useJsonLd(() => ({
   <div>
     <!-- Hero: product slider + actions card (on top of the slider on desktop, below it on mobile) -->
     <section class="relative bg-espresso text-linen">
-      <h1 class="sr-only">{{ heroTitle }}</h1>
       <div v-if="heroSlides.length" class="h-[420px] sm:h-[520px] lg:h-[calc(100svh-72px)] lg:max-h-[780px] lg:min-h-[560px]">
         <HomeHeroSlider :slides="heroSlides" />
       </div>
@@ -236,6 +234,13 @@ useJsonLd(() => ({
             </NuxtLink>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- SEO: the main «կահույք Երևանում» text; its heading is the page h1 -->
+    <section class="section">
+      <div class="container">
+        <SeoContentBlock :content="homeSeo" heading="h1" :faq-ld="false" />
       </div>
     </section>
 

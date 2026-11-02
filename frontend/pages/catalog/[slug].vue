@@ -10,6 +10,9 @@ if (error.value || !category.value) {
   throw pageLoadError(error.value, 'Բաժինը չի գտնվել');
 }
 
+/** Static SEO text for known category slugs (utils/seoContent.ts); other categories show none. */
+const seoBlock = computed(() => categorySeo[slug.value]);
+
 useSeo(() => ({
   title: category.value?.seoTitle || category.value?.name,
   description: category.value?.seoDescription || category.value?.description,
@@ -25,5 +28,8 @@ useSeo(() => ({
       <p v-if="category.description" class="mt-3 text-lg text-muted">{{ category.description }}</p>
     </header>
     <ProductCatalogView :category="category" />
+    <section v-if="seoBlock" class="mt-20 border-t border-line pt-14 md:mt-24">
+      <SeoContentBlock :content="seoBlock" />
+    </section>
   </div>
 </template>

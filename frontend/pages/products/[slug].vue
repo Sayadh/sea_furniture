@@ -39,9 +39,20 @@ onMounted(() => {
   api(`/products/${slug}/view`, { method: 'POST' }).catch(() => null);
 });
 
+/**
+ * Meta description: the Admin SEO text (or short description), completed with price and delivery area
+ * when it is too short for search results (< 110 chars), so every product gets a full ~150-char snippet.
+ */
+function productMetaDescription() {
+  const base = (p.value.seoDescription || p.value.shortDescription || p.value.name).trim().replace(/[։.]?$/, '։');
+  if (base.length >= 110) return base;
+  const price = p.value.price > 0 ? ` Գինը՝ ${formatPrice(p.value.price)}։` : '';
+  return `${base}${price} Առաքում Երևանում և ամբողջ Հայաստանում։`;
+}
+
 useSeo(() => ({
   title: p.value.seoTitle || plainName.value,
-  description: p.value.seoDescription || p.value.shortDescription,
+  description: productMetaDescription(),
   image: p.value.images[0]?.url,
   type: 'product',
 }));

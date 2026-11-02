@@ -14,6 +14,14 @@ const { data: services } = await useAsyncData('services', () => api<Service[]>('
 const s = computed(() => service.value!);
 const others = computed(() => services.value.filter((x) => x.id !== s.value.id).slice(0, 3));
 
+/** Static SEO text for known repair services; «{duration}» comes from Admin so the text matches the page. */
+const seoBlock = computed(() => {
+  const content = serviceSeo[slug];
+  if (!content) return null;
+  const duration = s.value.duration || 'կախված աշխատանքի ծավալից';
+  return { ...content, faqs: content.faqs?.map((f) => ({ ...f, a: f.a.replaceAll('{duration}', duration) })) };
+});
+
 useSeo(() => ({ title: s.value.seoTitle || s.value.title, description: s.value.seoDescription || s.value.shortDescription, image: s.value.images[0]?.url }));
 useJsonLd(() => ({
   '@context': 'https://schema.org',
@@ -21,8 +29,18 @@ useJsonLd(() => ({
   name: s.value.title,
   description: s.value.shortDescription || undefined,
   image: s.value.images[0]?.url,
-  areaServed: { '@type': 'City', name: 'Երևան' },
-  provider: { '@type': 'FurnitureStore', name: settings.value?.siteName || config.public.siteName, telephone: settings.value?.phone || undefined },
+  serviceType: s.value.title,
+  url: `${config.public.siteUrl}/services/${slug}`,
+  areaServed: [
+    { '@type': 'City', name: 'Երևան' },
+    { '@type': 'Country', name: 'Հայաստան' },
+  ],
+  provider: {
+    '@type': 'FurnitureStore',
+    name: settings.value?.siteName || config.public.siteName,
+    url: config.public.siteUrl,
+    telephone: settings.value?.phone || undefined,
+  },
   ...(s.value.priceFrom ? { offers: { '@type': 'Offer', priceCurrency: 'AMD', price: s.value.priceFrom } } : {}),
 }));
 </script>
@@ -50,6 +68,9 @@ useJsonLd(() => ({
         <h2 class="section-title">Ինչ է ներառում աշխատանքը</h2>
         <div class="stitch mt-4 w-24" aria-hidden="true" />
         <p class="prose-text mt-6">{{ s.description }}</p>
+      </section>
+      <section v-if="seoBlock" class="mt-16 border-t border-line pt-14">
+        <SeoContentBlock :content="seoBlock" />
       </section>
     </div>
     <section v-if="others.length" class="border-t border-line bg-cream/50 py-16">

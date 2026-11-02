@@ -92,5 +92,11 @@ useJsonLd(() =>
         </div>
       </div>
     </section>
+
+    <section class="section">
+      <div class="container">
+        <SeoContentBlock :content="servicesSeo" />
+      </div>
+    </section>
   </div>
 </template>

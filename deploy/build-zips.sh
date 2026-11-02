@@ -25,6 +25,7 @@ ENV_FILE="frontend/.env.production"
 read_var() { grep -E "^$1=" "$ENV_FILE" | tail -1 | cut -d= -f2- | sed -e 's/^["'\'']//' -e 's/["'\'']$//'; }
 export VITE_API_URL="$(read_var VITE_API_URL)"
 export NUXT_PUBLIC_SITE_URL="$(read_var NUXT_PUBLIC_SITE_URL)"
+export NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION="$(read_var NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION)"  # optional
 [ -n "$VITE_API_URL" ] && [ -n "$NUXT_PUBLIC_SITE_URL" ] || { echo "✗ VITE_API_URL and NUXT_PUBLIC_SITE_URL must be set in $ENV_FILE" >&2; exit 1; }
 echo "→ Site: $NUXT_PUBLIC_SITE_URL   API: $VITE_API_URL"
 

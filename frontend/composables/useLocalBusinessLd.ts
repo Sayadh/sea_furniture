@@ -15,7 +15,11 @@ export function useLocalBusinessLd() {
       telephone: s?.phone || undefined,
       description: s?.seoDescription || undefined,
       address: s?.address ? { '@type': 'PostalAddress', streetAddress: s.address, addressLocality: 'Երևան', addressCountry: 'AM' } : undefined,
-      areaServed: 'AM',
+      // Yerevan first (local intent), then the whole country
+      areaServed: [
+        { '@type': 'City', name: 'Երևան' },
+        { '@type': 'Country', name: 'Հայաստան' },
+      ],
       priceRange: '֏֏',
       sameAs: [s?.instagramUrl, s?.tiktokUrl, s?.facebookUrl].filter(Boolean),
       openingHours: undefined,

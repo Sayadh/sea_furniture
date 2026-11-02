@@ -211,3 +211,18 @@ bash deploy/deploy-hosting.sh rollback frontend   # (կամ backend) վերադ�
 | `deploy-hosting.sh` → `SSH failed` | `ssh seafurniture "echo OK"`։ Timeout → IP-ն ժամանակավոր արգելափակված է (սպասեք 15–30 րոպե կամ գրեք support-ին)։ `Permission denied` → key-ը Authorize արված չէ cPanel-ում։ |
 | `deploy-hosting.sh` → `Release install failed` | Ընթացիկ տարբերակը չի փոխվել։ Ստուգեք disk quota-ն (cPanel → Disk Usage)։ |
 | Նկարը չի վերբեռնվում | Համոզվեք, որ `UPLOAD_DIR`-ի թղթապանակը (`/home/etbgahjl/sea_uploads`) գոյություն ունի։ |
+
+---
+
+## 7. SEO և AI
+
+| Հասցե | Ինչի համար |
+|---|---|
+| `https://seafurniture.am/sitemap.xml` | Sitemap-ի ինդեքս՝ **միայն այս մեկն** ուղարկեք Google Search Console-ում և Bing Webmaster Tools-ում |
+| `/sitemaps/pages.xml`, `categories.xml`, `services.xml`, `products.xml` | Առանձին sitemap-ներ (ապրանքներինը՝ նկարներով)։ Թարմանում են ավտոմատ՝ ադմինկայի փոփոխություններից (30 րոպե քեշ) |
+| `/robots.txt` | Թույլատրում է որոնողական և AI բոտերին (GPTBot, ClaudeBot, PerplexityBot…), փակում է `/admin`, `/api`, զամբյուղը |
+| `/llms.txt`, `/llms-full.txt` | Բիզնեսի ամփոփում AI օգնականների համար (առանց գների)։ Թարմանում է ավտոմատ |
+
+**Google Search Console-ի հաստատում.** Search Console → Add property → URL prefix → `https://seafurniture.am` → **HTML tag** մեթոդ → պատճենեք միայն `content="…"` արժեքը → cPanel → **Setup Node.js App** → `seafurniture.am` → Environment variables → `NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION` = այդ արժեքը → **Restart** → Search Console-ում **Verify**։ Ապա **Sitemaps** → `sitemap.xml` → Submit։
+
+SEO տեքստերը (գլխավոր էջ, կատալոգ, բաժիններ, ծառայություններ, նոր էջեր) գտնվում են `frontend/utils/seoContent.ts`-ում։ Փոխելուց հետո թարմացրեք `SEO_CONTENT_UPDATED` ամսաթիվը։

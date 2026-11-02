@@ -13,10 +13,20 @@ const errors = reactive<Record<string, string>>({});
 
 const keys = [
   'siteName', 'logoUrl', 'logoPath', 'phone', 'phone2', 'whatsapp', 'address', 'workingHours', 'instagramUrl', 'tiktokUrl', 'facebookUrl',
-  'mapEmbedUrl', 'heroTitle', 'heroSubtitle', 'heroImageUrl', 'heroImagePath', 'deliveryInfo', 'seoTitle', 'seoDescription',
+  'mapEmbedUrl', 'heroTitle', 'heroSubtitle', 'heroImageUrl', 'heroImagePath', 'deliveryInfo',
+  'aboutImage1Url', 'aboutImage1Path', 'aboutImage1Alt', 'aboutImage2Url', 'aboutImage2Path', 'aboutImage2Alt',
+  'aboutImage3Url', 'aboutImage3Path', 'aboutImage3Alt', 'seoTitle', 'seoDescription',
 ] as const;
 type Key = (typeof keys)[number];
 const form = reactive(Object.fromEntries(keys.map((k) => [k, ''])) as Record<Key, string | null>);
+const aboutSlots = ([1, 2, 3] as const).map((n) => ({
+  n,
+  label: n === 1 ? 'Նկար 1 (վերևում)' : `Նկար ${n} (արտադրամաս)`,
+  url: `aboutImage${n}Url` as const,
+  path: `aboutImage${n}Path` as const,
+  alt: `aboutImage${n}Alt` as const,
+  placeholder: ABOUT_IMAGE_DEFAULTS[n].alt,
+}));
 
 onMounted(async () => {
   try {
@@ -103,6 +113,26 @@ async function save() {
           <AdminField label="Banner-ի նկար">
             <AdminSingleImage v-model:busy="uploading" folder="settings" :url="form.heroImageUrl" label="Banner" @change="(v) => { form.heroImageUrl = v.url; form.heroImagePath = v.path; }" />
           </AdminField>
+        </div>
+      </AdminCard>
+
+      <AdminCard title="«Մեր մասին» էջի նկարներ">
+        <p class="mb-5 text-sm text-muted">Դատարկ թողնելու դեպքում էջում երևում է ստանդարտ նկարը։ Alt տեքստը նկարի կարճ նկարագրությունն է (կարևոր է SEO-ի համար)։</p>
+        <div class="grid gap-6">
+          <div v-for="slot in aboutSlots" :key="slot.n" class="grid gap-4 border-t border-line pt-5 first:border-t-0 first:pt-0 md:grid-cols-[auto_1fr] md:items-start">
+            <AdminField :label="slot.label">
+              <AdminSingleImage
+                v-model:busy="uploading"
+                folder="settings"
+                :url="form[slot.url]"
+                :label="slot.label"
+                @change="(v) => { form[slot.url] = v.url; form[slot.path] = v.path; }"
+              />
+            </AdminField>
+            <AdminField label="Alt տեքստ" :for="`st-about-alt-${slot.n}`" :error="errors[slot.alt]">
+              <input :id="`st-about-alt-${slot.n}`" v-model="form[slot.alt]" class="input" maxlength="255" :placeholder="slot.placeholder" />
+            </AdminField>
+          </div>
         </div>
       </AdminCard>
 

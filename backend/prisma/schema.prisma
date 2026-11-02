@@ -345,6 +345,16 @@ model SiteSettings {
   heroSubtitle   String?  @db.VarChar(500)
   heroImageUrl   String?  @db.VarChar(1000)
   heroImagePath  String?  @db.VarChar(500)
+  /// «Մեր մասին» page photos (1 = top, 2 and 3 = workshop pair); empty → built-in placeholder
+  aboutImage1Url  String? @db.VarChar(1000)
+  aboutImage1Path String? @db.VarChar(500)
+  aboutImage1Alt  String? @db.VarChar(255)
+  aboutImage2Url  String? @db.VarChar(1000)
+  aboutImage2Path String? @db.VarChar(500)
+  aboutImage2Alt  String? @db.VarChar(255)
+  aboutImage3Url  String? @db.VarChar(1000)
+  aboutImage3Path String? @db.VarChar(500)
+  aboutImage3Alt  String? @db.VarChar(255)
   deliveryInfo   String?  @db.Text
   seoTitle       String?
   seoDescription String?  @db.VarChar(320)

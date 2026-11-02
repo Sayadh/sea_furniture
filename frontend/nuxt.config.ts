@@ -24,6 +24,9 @@ export default defineNuxtConfig({
       apiBase: '/api',
       siteUrl,
       siteName: 'Sea Furniture',
+      // Google Search Console "HTML tag" verification code (content="..." value only). Empty → no tag.
+      // Can also be set at runtime on the server: NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      googleSiteVerification: process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
     },
   },
 

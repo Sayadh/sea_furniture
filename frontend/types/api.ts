@@ -132,6 +132,15 @@ export interface SiteSettings {
   heroSubtitle: string | null;
   heroImageUrl: string | null;
   heroImagePath?: string | null;
+  aboutImage1Url: string | null;
+  aboutImage1Path?: string | null;
+  aboutImage1Alt: string | null;
+  aboutImage2Url: string | null;
+  aboutImage2Path?: string | null;
+  aboutImage2Alt: string | null;
+  aboutImage3Url: string | null;
+  aboutImage3Path?: string | null;
+  aboutImage3Alt: string | null;
   deliveryInfo: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
